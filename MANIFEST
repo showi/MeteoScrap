@@ -1,0 +1,8 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/MeteoScrap.t
+lib/MeteoScrap.pm
+lib/MeteoScrap/Plugins/Base.pm
+lib/MeteoScrap/Plugins/MeteoFrance.pm

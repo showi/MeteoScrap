@@ -1,0 +1,6 @@
+Revision history for Perl extension MeteoScrap.
+
+0.01  Fri Mar 26 18:09:46 2010
+	- original version; created by h2xs 1.23 with options
+		-AXc -n MeteoScrap
+
