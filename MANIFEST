@@ -6,3 +6,6 @@ t/MeteoScrap.t
 lib/MeteoScrap.pm
 lib/MeteoScrap/Plugins/Base.pm
 lib/MeteoScrap/Plugins/MeteoFrance.pm
+lib/MeteoScrap/REST/API.pm
+lib/MeteoScrap/REST/API/service.pm
+lib/MeteoScrap/REST/Writer/text.pm
