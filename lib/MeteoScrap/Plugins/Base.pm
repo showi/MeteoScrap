@@ -19,12 +19,13 @@ sub new {
 	my $class = ref($that) || $that; 
 	my $self = bless({}, $class);
 	$self->{scrap} = shift;
-	my ($code) = @_;
-	$self->scrap->stran(\$code);
-	$self->{code} = $code;
+	$self->{data} = shift;
 	return $self;
 }
-
+sub data {
+	my $self = shift;
+	return $self->{data};
+}
 sub scrap {
 	my $self = shift;
 	return $self->{scrap};

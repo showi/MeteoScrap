@@ -4,8 +4,11 @@ MANIFEST
 README
 t/MeteoScrap.t
 lib/MeteoScrap.pm
+lib/MeteoScrap/Data.pm
 lib/MeteoScrap/Plugins/Base.pm
 lib/MeteoScrap/Plugins/MeteoFrance.pm
 lib/MeteoScrap/REST/API.pm
-lib/MeteoScrap/REST/API/service.pm
+lib/MeteoScrap/REST/API/services.pm
+lib/MeteoScrap/REST/API/services/id.pm
+lib/MeteoScrap/REST/API/services/service.pm
 lib/MeteoScrap/REST/Writer/text.pm

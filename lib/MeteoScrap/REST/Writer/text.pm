@@ -44,7 +44,8 @@ sub asBytes{
 				$str .= "$k2=" . $resp->{$k}->{$k2} . "\n";
 			}	
 		} else {
-			$str .= "$k=" . $resp->{$k} . "\n";
+			
+			#$str .= "$k=" . $resp->{$k} . "\n";
 		}
 	}
 	return $str;

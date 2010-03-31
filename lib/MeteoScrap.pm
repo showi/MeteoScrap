@@ -11,7 +11,7 @@ use Carp;
 use LWP::UserAgent;
 use Encode;
 use Data::Dump qw(dump);
-
+use MeteoScrap::Data;
 our @ISA = qw(Exporter);
 
 # Items to export into callers namespace by default. Note: do not export
@@ -50,18 +50,25 @@ sub load_plugin {
 	my $name = shift;
 	unless($self->is_plugin_loaded($name)) {
 		my $plugin = "MeteoScrap/Plugins/$name.pm";
-		print "Using plugin " . $plugin . "\n";
+		#print "Using plugin " . $plugin . "\n";
 		eval {
 			require $plugin;
 		};
 		if ($@) {
-			carp("Cannot load plugin: $plugin\n$@\n");	
+			confess("Cannot load plugin: $plugin\n$@\n");	
 			return 0;
 		}
 		$self->{plugins}->{$name} = 1;
 	}
 	return 1;
 }
+
+sub list_plugins {
+	my $self = shift;
+	# manual ... 
+	return qw(MeteoFrance);
+}
+
 
 sub is_plugin_loaded {
 	my $self = shift;
@@ -77,16 +84,19 @@ sub parse {
 	my ($plugin, $code) = @_;
 	$self->stran(\$plugin);
 	$self->stran(\$code);
+	my $data = new MeteoScrap::Data();
+	$data->plugin($plugin);
+	$data->id($code);
 	unless ($self->load_plugin($plugin)) {
-		carp("Cannot load plugin: " . $plugin);
-		return undef;
+		warn ("Cannot load plugin: " . $plugin);
+		$data->status(0);
+		$data->message("Cannot load plugin '$plugin'");
+		return $data;
 	}
 	my $pname = "MeteoScrap::Plugins::$plugin";
-	my $parser = $pname->new($self, $code);
-	my $r_h = $parser->run();
-	if ($r_h->{error}) {return undef;}
-	#dump($r_h);
-	return $r_h;
+	my $parser = $pname->new($self, $data);
+	$parser->run();
+	return $data;
 }
 
 sub http_get {

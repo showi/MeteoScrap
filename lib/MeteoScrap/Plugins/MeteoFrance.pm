@@ -19,24 +19,39 @@ our @EXPORT = qw();
 our $VERSION = '0.01';
 
 our $URL = "http://france.meteofrance.com/france/meteo/?PREVISIONS_PORTLET.path=previsionsville/%CODE%/";
-
 sub run {
 	my $self = shift;
 	my $url = $URL;
-	if ($self->{code} !~ /^\d{6}$/) {
-		return { error => "Invalid code"},
+	$self->data->country("France");
+	if ($self->data->id() !~ /^\d{6}$/) {
+		$self->data->status(0);
+		$self->data->message("InvalidId");
+		return undef,
 	}
-	my $code = $self->{code};
+	my $code = $self->data->id();
 	$url =~ s/%CODE%/$code/;
+	$self->data->url($url);
 	my $content;
 	my $res = $self->scrap->http_get($url);		
 	unless ($res->is_success) {
 		carp "Request fail for $url\n";
-		return { error => "Network error" };
+		$self->data->status(0);
+		$self->data->message("NetworkError");
+		return undef;
 	}
 	$content = $res->content;
 	utf8::decode($content);
-	return $self->parse_content(\$content);
+	my $data = $self->parse_content(\$content);
+	unless ($data) {
+		$self->data->status(0);
+		$self->data->message("NoData");
+		return undef;
+	}
+	$self->data->status(1);
+	for my $k (keys %$data) {
+		$self->data->$k($data->{$k});
+	}
+	return 1;
 }
 
 sub parse_content {
@@ -59,9 +74,10 @@ sub parse_weather {
 	my $d = $tree->look_down('_tag', 'input',
 		sub { $_[0]->attr('id') and $_[0]->attr('id') eq "addFavoritesLieu" }
 	);
-	if($d->attr('value') != $self->{code}) {
-		$r_d->{error} = "Invalid code";
-		return;
+	if($d->attr('value') != $self->data->id()) {
+		$self->data->status(0);
+		$self->data->message("InvalidId");
+		return undef;
 	}
 	$d = $tree->look_down('_tag', 'p',
 		sub { $_[0]->attr('class') and $_[0]->attr('class') eq "city" }
